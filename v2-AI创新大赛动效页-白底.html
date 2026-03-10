@@ -1,24 +1,782 @@
-<!doctype html>
-<html lang="zh">
+<!DOCTYPE html>
+<html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <title>AI创新大赛动效页</title>
-  <style>
-    body {margin:0; font-family:"Segoe UI", Roboto, sans-serif; background:#fff; color:#111; display:flex; align-items:center; justify-content:center; min-height:100vh;}
-    .card {text-align:center; padding:40px 32px; border:1px solid #eee; box-shadow:0 10px 30px rgba(0,0,0,.08); border-radius:14px; animation: pop 0.8s ease-out; }
-    h1 {margin:0 0 16px; font-size:2rem; color:#084CCF;}
-    p {margin:0 0 16px; color:#333;}
-    .bar {position:relative; width:240px; height:8px; background:#eee; border-radius:999px; overflow:hidden; margin:20px auto 0;}
-    .bar:before {content:''; position:absolute; left:0; height:100%; width:0%; background:linear-gradient(90deg, #007FFF, #00D7FF); animation: load 2.5s infinite; }
-    @keyframes load {0%{width:0%}50%{width:100%}100%{width:0%}}
-    @keyframes pop {0%{opacity:0; transform:scale(0.95)}100%{opacity:1; transform:scale(1)}}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>雷石 3月AI创新大赛 & 知识库建设奖</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+SC:wght@200;300;400;500;600;700;900&display=swap');
+
+:root {
+  --bg: #fbfbfd;
+  --surface: #ffffff;
+  --surface-2: #f5f5f7;
+  --border: rgba(0,0,0,0.08);
+  --text-primary: #1d1d1f;
+  --text-secondary: #6e6e73;
+  --text-tertiary: #86868b;
+  --accent-1: #0071e3;
+  --accent-2: #a855f7;
+  --accent-gradient: linear-gradient(135deg, #0071e3 0%, #a855f7 50%, #e84393 100%);
+  --accent-glow: rgba(0, 113, 227, 0.08);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+
+body {
+  font-family: 'Noto Sans SC', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--text-primary);
+  overflow-x: hidden;
+}
+
+/* === AMBIENT GLOW === */
+.ambient {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.ambient-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0;
+  animation: orb-breathe 8s ease-in-out infinite;
+}
+
+.ambient-orb:nth-child(1) {
+  width: 600px; height: 600px;
+  background: rgba(0, 113, 227, 0.06);
+  top: -10%; left: 50%;
+  transform: translateX(-50%);
+  animation-delay: 0s;
+}
+
+.ambient-orb:nth-child(2) {
+  width: 400px; height: 400px;
+  background: rgba(168, 85, 247, 0.04);
+  top: 30%; right: -10%;
+  animation-delay: 3s;
+}
+
+.ambient-orb:nth-child(3) {
+  width: 500px; height: 500px;
+  background: rgba(232, 67, 147, 0.03);
+  bottom: 10%; left: -5%;
+  animation-delay: 5s;
+}
+
+@keyframes orb-breathe {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
+/* === LAYOUT === */
+.wrapper {
+  position: relative;
+  z-index: 1;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* === HERO === */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 120px 24px 80px;
+  position: relative;
+}
+
+.hero-overline {
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+  opacity: 0;
+  animation: fade-up 1s ease-out 0.2s forwards;
+}
+
+.hero-title {
+  font-weight: 900;
+  font-size: clamp(48px, 10vw, 96px);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  margin-bottom: 8px;
+  opacity: 0;
+  animation: fade-up 1s ease-out 0.4s forwards;
+}
+
+.hero-title .gradient-text {
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-subtitle {
+  font-weight: 900;
+  font-size: clamp(32px, 6vw, 64px);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin-bottom: 32px;
+  opacity: 0;
+  animation: fade-up 1s ease-out 0.6s forwards;
+}
+
+.hero-desc {
+  font-size: 21px;
+  font-weight: 300;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  max-width: 500px;
+  margin-bottom: 48px;
+  opacity: 0;
+  animation: fade-up 1s ease-out 0.8s forwards;
+}
+
+.hero-cta {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+  opacity: 0;
+  animation: fade-up 1s ease-out 1s forwards;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 16px 32px;
+  border-radius: 980px;
+  font-size: 17px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+  font-family: inherit;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-filled {
+  background: var(--accent-gradient);
+  color: #fff;
+  box-shadow: 0 0 0 0 rgba(0, 113, 227, 0);
+}
+
+.btn-filled:hover {
+  transform: scale(1.04);
+  box-shadow: 0 4px 32px rgba(0, 113, 227, 0.2);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--accent-1);
+  border: 1.5px solid rgba(0, 113, 227, 0.3);
+}
+
+.btn-outline:hover {
+  background: rgba(0, 113, 227, 0.05);
+  border-color: var(--accent-1);
+  transform: scale(1.04);
+}
+
+/* Scroll indicator */
+.scroll-cue {
+  position: absolute;
+  bottom: 48px;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  animation: fade-up 1s ease-out 1.4s forwards;
+}
+
+.scroll-cue span {
+  display: block;
+  width: 1px;
+  height: 48px;
+  background: linear-gradient(to bottom, var(--text-tertiary), transparent);
+  margin: 0 auto;
+  animation: scroll-line 2s ease-in-out infinite;
+}
+
+@keyframes scroll-line {
+  0% { transform: scaleY(0); transform-origin: top; opacity: 1; }
+  50% { transform: scaleY(1); transform-origin: top; opacity: 1; }
+  51% { transform: scaleY(1); transform-origin: bottom; }
+  100% { transform: scaleY(0); transform-origin: bottom; opacity: 1; }
+}
+
+/* === DIVIDER === */
+.section-divider {
+  width: 100%;
+  height: 1px;
+  background: var(--border);
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+/* === TRACKS SECTION === */
+.tracks {
+  padding: 120px 24px;
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+.section-overline {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 12px;
+}
+
+.section-heading {
+  font-size: clamp(32px, 5vw, 48px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin-bottom: 16px;
+}
+
+.section-body {
+  font-size: 19px;
+  font-weight: 300;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-width: 600px;
+  margin-bottom: 64px;
+}
+
+.tracks-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+@media (min-width: 768px) {
+  .tracks-grid { grid-template-columns: 1fr 1fr; }
+}
+
+.track-card {
+  position: relative;
+  border-radius: 20px;
+  padding: 48px 36px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  transition: all 0.4s ease;
+  opacity: 0;
+  transform: translateY(32px);
+}
+
+.track-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.track-card:hover {
+  border-color: rgba(0,0,0,0.12);
+  background: var(--surface-2);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+}
+
+.track-card .card-label {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 6px 14px;
+  border-radius: 980px;
+  margin-bottom: 24px;
+}
+
+.track-card.track-ai .card-label {
+  background: rgba(0, 113, 227, 0.08);
+  color: var(--accent-1);
+}
+
+.track-card.track-kb .card-label {
+  background: rgba(168, 85, 247, 0.08);
+  color: var(--accent-2);
+}
+
+.track-card h3 {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-bottom: 12px;
+}
+
+.track-card .card-desc {
+  font-size: 16px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 32px;
+}
+
+.track-card .features {
+  list-style: none;
+  margin-bottom: 36px;
+}
+
+.track-card .features li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  font-size: 15px;
+  color: var(--text-secondary);
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.track-card .features li:last-child {
+  border-bottom: none;
+}
+
+.track-card .features li .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.track-ai .features li .dot { background: var(--accent-1); }
+.track-kb .features li .dot { background: var(--accent-2); }
+
+.card-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 17px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: gap 0.3s ease;
+}
+
+.track-ai .card-action { color: var(--accent-1); }
+.track-kb .card-action { color: var(--accent-2); }
+
+.card-action:hover { gap: 10px; }
+
+.card-action .arrow {
+  transition: transform 0.3s ease;
+}
+
+.card-action:hover .arrow {
+  transform: translateX(4px);
+}
+
+/* === KEY INFO === */
+.key-info {
+  padding: 120px 24px;
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+.info-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1px;
+  background: var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .info-row { grid-template-columns: repeat(3, 1fr); }
+}
+
+.info-item {
+  background: var(--surface);
+  padding: 48px 32px;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+.info-item.visible {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.info-item .info-label {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  margin-bottom: 12px;
+}
+
+.info-item .info-value {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-bottom: 6px;
+}
+
+.info-item .info-detail {
+  font-size: 15px;
+  color: var(--text-secondary);
+}
+
+/* === CTA SECTION === */
+.cta-section {
+  padding: 120px 24px 160px;
+  text-align: center;
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+.cta-block {
+  opacity: 0;
+  transform: translateY(32px);
+}
+
+.cta-block.visible {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cta-heading {
+  font-size: clamp(36px, 6vw, 56px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin-bottom: 20px;
+}
+
+.cta-heading .gradient-text {
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.cta-body {
+  font-size: 19px;
+  font-weight: 300;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 20px;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.cta-deadline {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  margin-bottom: 40px;
+}
+
+.cta-deadline strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.countdown {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  margin-bottom: 48px;
+}
+
+.countdown-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.countdown-num {
+  font-family: 'Inter', monospace;
+  font-size: clamp(40px, 8vw, 56px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+}
+
+.countdown-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  margin-top: 8px;
+  letter-spacing: 0.04em;
+}
+
+.countdown-sep {
+  font-size: 36px;
+  font-weight: 200;
+  color: var(--text-tertiary);
+  align-self: flex-start;
+  margin-top: 8px;
+}
+
+.cta-btns {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* === FOOTER === */
+.footer {
+  text-align: center;
+  padding: 32px 24px 48px;
+  border-top: 1px solid var(--border);
+}
+
+.footer-brand {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  letter-spacing: 0.08em;
+  margin-bottom: 4px;
+}
+
+.footer-copy {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+/* === ANIMATIONS === */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 600px) {
+  .hero { padding: 100px 20px 80px; min-height: 100svh; }
+  .hero-cta { flex-direction: column; align-items: center; }
+  .btn { width: 100%; max-width: 320px; }
+  .tracks { padding: 80px 20px; }
+  .key-info { padding: 80px 20px; }
+  .cta-section { padding: 80px 20px 120px; }
+  .cta-btns { flex-direction: column; align-items: center; }
+  .scroll-cue { display: none; }
+  .info-item { padding: 36px 24px; }
+  .track-card { padding: 36px 28px; }
+}
+</style>
 </head>
 <body>
-  <div class="card">
-    <h1>AI创新大赛动效页</h1>
-    <p>已自动提交并部署，适配 GitHub Pages。</p>
-    <div class="bar"></div>
+
+<!-- Ambient glow -->
+<div class="ambient">
+  <div class="ambient-orb"></div>
+  <div class="ambient-orb"></div>
+  <div class="ambient-orb"></div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <p class="hero-overline">雷石 · 2026 年 3 月</p>
+
+  <h1 class="hero-title">
+    <span class="gradient-text">AI 创新大赛</span>
+  </h1>
+  <p class="hero-subtitle">& 知识库建设奖</p>
+
+  <p class="hero-desc">
+    用 AI 解决真问题<br>
+    把经验沉淀为真知识
+  </p>
+
+  <div class="hero-cta">
+    <a href="https://m2miovoqda.feishu.cn/share/base/form/shrcnKRZVnMWHiPcEas2qc9pxbc" target="_blank" class="btn btn-filled">
+      AI 创新大赛报名
+    </a>
+    <a href="https://m2miovoqda.feishu.cn/share/base/form/shrcnW4Fqt7kLibVwxdAgOHmYzI" target="_blank" class="btn btn-outline">
+      知识库建设奖报名
+    </a>
   </div>
+
+  <div class="scroll-cue">
+    <span></span>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- TRACKS -->
+<section class="tracks">
+  <p class="section-overline">双赛道</p>
+  <h2 class="section-heading">两条赛道，各展所长</h2>
+  <p class="section-body">个人赛拼 AI 创新落地，团体赛拼知识沉淀。找到你的赛道，展现你的实力。</p>
+
+  <div class="tracks-grid">
+    <div class="track-card track-ai" data-animate>
+      <span class="card-label">个人赛</span>
+      <h3>AI 创新大赛</h3>
+      <p class="card-desc">跟业务相关、能真正落地用起来的 AI 项目。不要花架子，要真刀真枪。</p>
+      <ul class="features">
+        <li><span class="dot"></span>必须与实际业务场景结合</li>
+        <li><span class="dot"></span>能落地、能跑起来的方案优先</li>
+        <li><span class="dot"></span>解决真问题，创造真价值</li>
+      </ul>
+      <a href="https://m2miovoqda.feishu.cn/share/base/form/shrcnKRZVnMWHiPcEas2qc9pxbc" target="_blank" class="card-action">
+        立即报名 <span class="arrow">→</span>
+      </a>
+    </div>
+
+    <div class="track-card track-kb" data-animate>
+      <span class="card-label">团体赛</span>
+      <h3>飞书知识库建设奖</h3>
+      <p class="card-desc">把经验、流程、踩坑沉淀到飞书知识库。好的知识沉淀，让每个人少走弯路。</p>
+      <ul class="features">
+        <li><span class="dot"></span>团队协作，集体智慧结晶</li>
+        <li><span class="dot"></span>经验流程系统化沉淀</li>
+        <li><span class="dot"></span>让知识流动，减少重复劳动</li>
+      </ul>
+      <a href="https://m2miovoqda.feishu.cn/share/base/form/shrcnW4Fqt7kLibVwxdAgOHmYzI" target="_blank" class="card-action">
+        立即报名 <span class="arrow">→</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- KEY INFO -->
+<section class="key-info">
+  <div style="text-align: center; margin-bottom: 64px;">
+    <p class="section-overline">关键信息</p>
+    <h2 class="section-heading" style="text-align: center;">你需要知道的</h2>
+  </div>
+
+  <div class="info-row">
+    <div class="info-item" data-animate>
+      <p class="info-label">报名截止</p>
+      <p class="info-value">3 月 31 日</p>
+      <p class="info-detail">17:30 前完成提交</p>
+    </div>
+    <div class="info-item" data-animate>
+      <p class="info-label">参赛形式</p>
+      <p class="info-value">个人 + 团队</p>
+      <p class="info-detail">AI 大赛个人 · 知识库团队</p>
+    </div>
+    <div class="info-item" data-animate>
+      <p class="info-label">核心标准</p>
+      <p class="info-value">落地为王</p>
+      <p class="info-detail">能用 > 好看</p>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-block" data-animate>
+    <h2 class="cta-heading">
+      别等了，<span class="gradient-text">现在报名</span>
+    </h2>
+    <p class="cta-body">
+      3 分钟完成报名，让你的创意被看见
+    </p>
+    <p class="cta-deadline">
+      报名截止 <strong>2026 年 3 月 31 日 17:30</strong>
+    </p>
+
+    <div class="countdown">
+      <div class="countdown-unit">
+        <span class="countdown-num" id="cd-days">--</span>
+        <span class="countdown-label">天</span>
+      </div>
+      <span class="countdown-sep">:</span>
+      <div class="countdown-unit">
+        <span class="countdown-num" id="cd-hours">--</span>
+        <span class="countdown-label">时</span>
+      </div>
+      <span class="countdown-sep">:</span>
+      <div class="countdown-unit">
+        <span class="countdown-num" id="cd-mins">--</span>
+        <span class="countdown-label">分</span>
+      </div>
+    </div>
+
+    <div class="cta-btns">
+      <a href="https://m2miovoqda.feishu.cn/share/base/form/shrcnKRZVnMWHiPcEas2qc9pxbc" target="_blank" class="btn btn-filled">
+        AI 创新大赛报名
+      </a>
+      <a href="https://m2miovoqda.feishu.cn/share/base/form/shrcnW4Fqt7kLibVwxdAgOHmYzI" target="_blank" class="btn btn-outline">
+        知识库建设奖报名
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <p class="footer-brand">LESHI</p>
+  <p class="footer-copy">北京雷石天地电子技术有限公司 · 2026 年 3 月 AI 创新月</p>
+</footer>
+
+<script>
+// Scroll reveal
+(function() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const el = entry.target;
+        const siblings = el.parentNode.querySelectorAll('[data-animate]');
+        const idx = Array.from(siblings).indexOf(el);
+        setTimeout(() => el.classList.add('visible'), idx * 120);
+        observer.unobserve(el);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+
+  document.querySelectorAll('[data-animate]').forEach(el => observer.observe(el));
+})();
+
+// Countdown
+(function() {
+  const deadline = new Date('2026-03-31T17:30:00+08:00');
+
+  function update() {
+    const diff = deadline - new Date();
+    if (diff <= 0) {
+      document.getElementById('cd-days').textContent = '0';
+      document.getElementById('cd-hours').textContent = '0';
+      document.getElementById('cd-mins').textContent = '0';
+      return;
+    }
+    document.getElementById('cd-days').textContent = String(Math.floor(diff / 864e5)).padStart(2, '0');
+    document.getElementById('cd-hours').textContent = String(Math.floor((diff % 864e5) / 36e5)).padStart(2, '0');
+    document.getElementById('cd-mins').textContent = String(Math.floor((diff % 36e5) / 6e4)).padStart(2, '0');
+  }
+
+  update();
+  setInterval(update, 60000);
+})();
+</script>
+
 </body>
 </html>
